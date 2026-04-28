@@ -2,8 +2,6 @@ use std::process::Command;
 
 use anyhow::Result;
 
-mod apt;
-mod npm;
 mod pacman;
 
 use log::{info, trace, warn};
@@ -66,9 +64,7 @@ pub fn default() -> Option<Box<dyn PackageManager>> {
 
 pub fn from_name(name: &str) -> Option<Box<dyn PackageManager>> {
     Some(match name {
-        "npm" => Box::new(npm::Npm {}),
         "pacman" => Box::new(pacman::Pacman {}),
-        "apt" => Box::new(apt::Apt {}),
         "cargo" => todo!(),
         "go" => todo!(),
         _ => return None,

@@ -14,19 +14,19 @@ use log::info;
 /// 3. $HOME/.config/mehr/
 pub fn config() -> Result<PathBuf> {
     if let Ok(mehr_path) = env::var("MEHR_PATH") {
-        info!("MEHR_PATH found: {}", &mehr_path);
+        info!("inf: MEHR_PATH found: {}", &mehr_path);
         return Ok(Path::new(&mehr_path).to_path_buf());
     }
 
     if let Ok(xdg_config_home) = env::var("XDG_CONFIG_HOME") {
         let path = Path::new(&xdg_config_home).join("mehr").to_path_buf();
-        info!("Extracted path from $XDG_CONFIG_HOME: {:?}", &path);
+        info!("inf: Extracted path from $XDG_CONFIG_HOME: {:?}", &path);
         return Ok(path);
     }
 
     if let Ok(home) = env::var("HOME") {
         let path = Path::new(&home).join(".config").join("mehr").to_path_buf();
-        info!("Extracted path from $HOME: {:?}", &path);
+        info!("inf: Extracted path from $HOME: {:?}", &path);
         return Ok(path);
     }
 

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs, path::PathBuf};
 
-use log::trace;
+use log::info;
 use mlua::LuaSerdeExt;
 use mlua::UserData;
 use serde::{Deserialize, Serialize};
@@ -37,7 +37,7 @@ impl Config {
     pub fn from_path_buf(lua: &mlua::Lua, path: PathBuf) -> Result<Self, String> {
         let path_clone = path.clone();
         let path_as_str = path_clone.to_str().unwrap_or_else(|| "invalid utf8");
-        trace!("loading configuration");
+        info!("loading configuration");
         let config_as_str = fs::read_to_string(path).map_err(|err| {
             format!(
                 "Failed to read configuration file '{}': {}",

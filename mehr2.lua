@@ -15,8 +15,8 @@ MEHR2 = {
             "zathura",
             "curl",
         },
-        apt = { "build-essentials" },
         pacman = { "base-devel", "pamixer", "hugo", "go", "ghostty" },
+        cargo = { "exa", "bat", "ripgrep", "yazi" },
         scratch = {
             {
                 identifier = "rustup",
@@ -41,40 +41,6 @@ MEHR2 = {
                     make install
                 ]]
             },
-            {
-                -- see: https://github.com/ziglang/zig/wiki/Install-Zig-from-a-Package-Manager
-                identifier = "zig",
-                execute_for = { "apt" },
-                update = "snap refresh zig",
-                needs = { "snap" },
-                script = "snap install zig --classic --beta"
-            },
-            {
-                -- see: https://ghostty.org/docs/install/build
-                identifier = "ghostty",
-                execute_for = { "apt" },
-                git = "github.com/ghostty-org/ghostty",
-                needs = { "zig", "gtk4" },
-                script = "zig build -p /usr -Doptimize=ReleaseFast"
-            },
-            {
-                identifier = "go",
-                execute_for = { "apt" },
-                script = [[
-                    VERSION=$(curl -s "https://go.dev/VERSION?m=text" | head -n1)
-                    wget https://go.dev/dl/$VERSION.linux-amd64.tar.gz
-                    rm -rf /usr/local/go
-                    tar -C /usr/local -xzf $VERSION.linux-amd64.tar.gz
-                ]]
-            },
-            {
-                -- see: https://gohugo.io/installation/linux/#build-from-source
-                identifier = "hugo",
-                execute_for = { "apt" },
-                needs = { "go" },
-                script = "go install github.com/gohugoio/hugo@latest"
-            },
         },
-        cargo = { "exa", "bat", "ripgrep", "yazi" }
     },
 }
