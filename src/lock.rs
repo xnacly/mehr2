@@ -23,7 +23,7 @@ impl Lock {
             .write(true)
             .create(true)
             .open(path)
-            .map_err(|err| format!("failed to open lockfile: {err}"))?;
+            .map_err(|err| format!("failed to open lockfile: {err}, this is totally fine"))?;
         Ok(serde_json::to_writer(file, self)
             .map_err(|err| format!("failed to serialize into lockfile: {err}"))
             .map(|_| ())?)
@@ -44,7 +44,29 @@ impl Lock {
                 store.insert(key, other_packages);
             }
         }
-        dbg!(store)
+        store
+    }
+
+    pub fn diff_set(&self, config: &Config) -> HashMap<String, HashSet<String>> {
+        let desired: Lock = config.into();
+        let mut result: HashMap<String, HashSet<String>> = HashMap::new();
+
+        for (provider, desired_packages) in desired.packages {
+            let installed_packages = self.packages.get(&provider);
+
+            let installed_set: HashSet<&String> = installed_packages
+                .map(|v| v.iter().collect())
+                .unwrap_or_default();
+
+            let missing: HashSet<String> = desired_packages
+                .into_iter()
+                .filter(|pkg| !installed_set.contains(pkg))
+                .collect();
+
+            result.insert(provider, missing);
+        }
+
+        result
     }
 }
 

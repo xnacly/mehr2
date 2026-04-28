@@ -8,11 +8,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ScratchPackage {
     pub identifier: String,
-    /// execute scratch building if any of the vector members is found as a executable on the system
-    pub executes_for: Option<Vec<String>>,
     /// the package requires all members to be executables on the system for it to build
     pub needs: Option<Vec<String>>,
-    /// bash script to execute when installing and updating packages
+    /// inline bash script to execute when installing and updating packages
     pub script: Option<String>,
     /// git url to use for cloning
     pub git: Option<String>,

@@ -1,6 +1,6 @@
 MEHR2 = {
     packages = {
-        default = {
+        pacman = {
             "git",
             "picom",
             "fish",
@@ -14,16 +14,19 @@ MEHR2 = {
             "acpi",
             "zathura",
             "curl",
+            "base-devel",
+            "pamixer",
+            "hugo",
+            "go",
+            "ghostty",
+            "rustup"
         },
-        pacman = { "base-devel", "pamixer", "hugo", "go", "ghostty" },
         cargo = { "exa", "bat", "ripgrep", "yazi" },
         scratch = {
             {
-                identifier = "rustup",
-                needs = { "curl" },
-                update = "rustup update",
+                identifier = "rustup-tooling",
+                needs = { "rustup" },
                 script = [[
-                    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
                     rustup component add rust-docs
                     rustup component add cargo
                     rustup component add clippy

@@ -1,12 +1,11 @@
+use super::{Package, PackageManager};
 use std::process::Command;
-
-use super::PackageManager;
 
 #[derive(Debug)]
 pub struct Pacman;
 
 impl PackageManager for Pacman {
-    fn upgrade(&self, packages: &[super::Package]) -> anyhow::Result<()> {
+    fn upgrade(&self, packages: &[Package]) -> anyhow::Result<()> {
         Ok(Command::new("sudo")
             .arg("pacman")
             .arg("-S")
@@ -15,7 +14,7 @@ impl PackageManager for Pacman {
             .map(|_| {})?)
     }
 
-    fn install(&self, packages: &[super::Package]) -> anyhow::Result<()> {
+    fn install(&self, packages: &[Package]) -> anyhow::Result<()> {
         Pacman.upgrade(packages)
     }
 
@@ -25,5 +24,11 @@ impl PackageManager for Pacman {
             .arg("-Sy")
             .status()
             .map(|_| {})?)
+    }
+
+    fn is_installed(&self, package: &Package) -> anyhow::Result<bool> {
+        let status = Command::new("pacman").arg("-Q").arg(package).output()?;
+
+        Ok(status.status.success())
     }
 }
