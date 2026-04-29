@@ -1,6 +1,9 @@
 use std::path::PathBuf;
 
-use crate::{config, fs, lock, providers, Args};
+use crate::{
+    config::{self, Provider},
+    fs, lock, providers, Args,
+};
 use log::trace;
 use serde::Serialize;
 
@@ -40,12 +43,12 @@ fn build_report(
     let diff = lock.diff_set(&conf);
     let mut report = vec![];
 
-    for (provider, packages) in &conf.providers {
-        let provider_ok = fs::binary_is_executable(provider);
-        let provider_path = fs::has_binary(paths, provider).map(|p| p.display().to_string());
+    for Provider { name, packages } in &conf.providers {
+        let provider_ok = fs::binary_is_executable(name);
+        let provider_path = fs::has_binary(paths, name).map(|p| p.display().to_string());
 
         let mut provider_report = ProviderReport {
-            name: provider.clone(),
+            name: name.clone(),
             status: if provider_ok {
                 ProviderStatus::Ok
             } else {
@@ -57,8 +60,8 @@ fn build_report(
 
         match packages {
             config::Packages::Packages(items) => {
-                let provider_diff = diff.get(provider).unwrap();
-                let resolved_provider = providers::from_name(provider).unwrap();
+                let provider_diff = diff.get(name).unwrap();
+                let resolved_provider = providers::from_name(name).unwrap();
 
                 for i in items {
                     let status = if provider_diff.contains(i) {
@@ -78,7 +81,7 @@ fn build_report(
                 }
             }
             config::Packages::ScratchPackages(scratch_packages) => {
-                let provider_diff = diff.get(provider).unwrap();
+                let provider_diff = diff.get(name).unwrap();
 
                 for i in scratch_packages {
                     let status = if provider_diff.contains(&i.identifier) {
@@ -109,7 +112,7 @@ pub fn info(
 ) -> anyhow::Result<()> {
     let report = build_report(paths, conf, lock);
     if args.json {
-        println!("{}", serde_json::to_string_pretty(&report).unwrap());
+        println!("{}", serde_json::to_string(&report).unwrap());
     } else {
         trace!(
             "providers: \n{}",

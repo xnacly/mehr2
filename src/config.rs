@@ -24,9 +24,15 @@ pub enum Packages {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct Provider {
+    pub name: String,
+    pub packages: Packages,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 /// the MEHR2 struct in the mehr2.lua file
 pub struct Config {
-    pub providers: HashMap<String, Packages>,
+    pub providers: Vec<Provider>,
 }
 
 impl Config {
