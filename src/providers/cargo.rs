@@ -1,3 +1,5 @@
+use crate::fs;
+
 use super::{Package, PackageManager};
 use std::{path::PathBuf, process::Command};
 
@@ -28,7 +30,7 @@ impl PackageManager for Cargo {
 
     fn is_installed(&self, paths: &[PathBuf], package: &Package) -> anyhow::Result<bool> {
         // binary exists in PATH or cargo bin dir
-        if let Some(path) = super::has_binary(paths, package) {
+        if let Some(path) = fs::has_binary(paths, package) {
             return Ok(path.to_string_lossy().contains(".cargo/bin") || true);
         }
 
