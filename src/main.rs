@@ -72,8 +72,9 @@ fn main() {
         },
         Command::Update => todo!("update"),
         Command::Info => {
-            let paths = env::split_paths(&env::var_os("PATH").unwrap());
-            cmd::info(path_env, config, lock);
+            let path_env = env::var_os("PATH").unwrap();
+            let paths = env::split_paths(&path_env);
+            cmd::info::info(&paths.collect::<Vec<_>>(), config, lock);
         }
     }
 }

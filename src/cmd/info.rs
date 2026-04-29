@@ -1,30 +1,32 @@
-use std::env::SplitPaths;
+use std::path::PathBuf;
 
 use crate::{config, lock, providers};
-use log::{error, info, trace, warn};
+use log::trace;
 
-pub fn info(paths: SplitPaths, config: config::Config, lock: lock::Lock) {
+pub fn info(paths: &[PathBuf], config: config::Config, lock: lock::Lock) {
     let diff = lock.diff_set(&config);
     trace!(
         "providers: \n{}",
         config
-            .packages
+            .providers
             .iter()
             .filter(|(provider, _)| *provider != "scratch")
             .map(|(provider, _)| format!(
-                "{provider}: {} ({:#?})",
+                "{provider}: {} at {}",
                 if providers::binary_is_executable(provider) {
                     "OK"
                 } else {
                     "MISSING"
                 },
-                providers::has_binary(&paths, provider).unwrap_or_default()
+                providers::has_binary(paths, provider)
+                    .unwrap_or_default()
+                    .display()
             ))
             .collect::<Vec<_>>()
             .join("\n")
     );
 
-    for (provider, packages) in config.packages {
+    for (provider, packages) in config.providers {
         match packages {
             config::Packages::Packages(items) => {
                 let provider_diff = diff.get(&provider).unwrap();
@@ -37,7 +39,7 @@ pub fn info(paths: SplitPaths, config: config::Config, lock: lock::Lock) {
                             format!(
                                 "{i}: {}",
                                 if provider_diff.contains(i) {
-                                    if resolved_provider.is_installed(i).is_ok_and(|b| b) {
+                                    if resolved_provider.is_installed(paths, i).is_ok_and(|b| b) {
                                         "UNTRACKED"
                                     } else {
                                         "MISSING"
@@ -52,7 +54,25 @@ pub fn info(paths: SplitPaths, config: config::Config, lock: lock::Lock) {
                 );
             }
             config::Packages::ScratchPackages(scratch_packages) => {
-                trace!("scratch: \n")
+                let provider_diff = diff.get(&provider).unwrap();
+                trace!(
+                    "scratch: \n{}",
+                    scratch_packages
+                        .iter()
+                        .map(|i| {
+                            format!(
+                                "{}: {}",
+                                i.identifier,
+                                if provider_diff.contains(&i.identifier) {
+                                    "MISSING"
+                                } else {
+                                    "DONE"
+                                }
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                )
             }
         }
     }

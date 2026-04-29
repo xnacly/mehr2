@@ -10,10 +10,8 @@ pub struct ScratchPackage {
     pub identifier: String,
     /// the package requires all members to be executables on the system for it to build
     pub needs: Option<Vec<String>>,
-    /// inline bash script to execute when installing and updating packages
+    /// inline shell script to execute when installing and updating packages
     pub script: Option<String>,
-    /// git url to use for cloning
-    pub git: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -28,7 +26,7 @@ pub enum Packages {
 #[derive(Debug, Deserialize, Serialize)]
 /// the MEHR2 struct in the mehr2.lua file
 pub struct Config {
-    pub packages: HashMap<String, Packages>,
+    pub providers: HashMap<String, Packages>,
 }
 
 impl Config {

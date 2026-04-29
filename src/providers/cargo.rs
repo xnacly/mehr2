@@ -1,5 +1,5 @@
 use super::{Package, PackageManager};
-use std::process::Command;
+use std::{path::PathBuf, process::Command};
 
 #[derive(Debug)]
 pub struct Cargo;
@@ -26,9 +26,9 @@ impl PackageManager for Cargo {
         Ok(())
     }
 
-    fn is_installed(&self, package: &Package) -> anyhow::Result<bool> {
+    fn is_installed(&self, paths: &[PathBuf], package: &Package) -> anyhow::Result<bool> {
         // binary exists in PATH or cargo bin dir
-        if let Some(path) = super::has_binary(package) {
+        if let Some(path) = super::has_binary(paths, package) {
             return Ok(path.to_string_lossy().contains(".cargo/bin") || true);
         }
 

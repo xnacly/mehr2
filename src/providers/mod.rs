@@ -27,14 +27,14 @@ pub trait PackageManager: std::fmt::Debug {
     fn upgrade(&self, packages: &[Package]) -> Result<()>;
     fn install(&self, packages: &[Package]) -> Result<()>;
     fn update(&self) -> Result<()>;
-    fn is_installed(&self, package: &Package) -> Result<bool>;
+    fn is_installed(&self, paths: &[PathBuf], package: &Package) -> Result<bool>;
 }
 
 pub fn binary_is_executable(name: &str) -> bool {
     Command::new(name).output().is_ok()
 }
 
-pub fn has_binary(paths: &SplitPaths, name: &str) -> Option<PathBuf> {
+pub fn has_binary(paths: &[PathBuf], name: &str) -> Option<PathBuf> {
     for path in paths {
         let full = path.join(name);
         if full.exists() && fs::metadata(&full).is_ok() {

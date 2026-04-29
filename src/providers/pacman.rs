@@ -1,5 +1,5 @@
 use super::{Package, PackageManager};
-use std::process::Command;
+use std::{path::PathBuf, process::Command};
 
 #[derive(Debug)]
 pub struct Pacman;
@@ -26,9 +26,8 @@ impl PackageManager for Pacman {
             .map(|_| {})?)
     }
 
-    fn is_installed(&self, package: &Package) -> anyhow::Result<bool> {
+    fn is_installed(&self, paths: &[PathBuf], package: &Package) -> anyhow::Result<bool> {
         let status = Command::new("pacman").arg("-Q").arg(package).output()?;
-
         Ok(status.status.success())
     }
 }

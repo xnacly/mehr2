@@ -73,7 +73,7 @@ impl Lock {
 impl From<&Config> for Lock {
     fn from(value: &Config) -> Self {
         let mut lock = Self::default();
-        value.packages.iter().for_each(|(key, value)| {
+        value.providers.iter().for_each(|(key, value)| {
             let package_names: Vec<String> = match value {
                 Packages(packages) => packages.clone(),
                 ScratchPackages(packages) => {
