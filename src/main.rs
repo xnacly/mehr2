@@ -41,17 +41,24 @@ pub struct Args {
     /// disable safe guards for a specific action
     force: bool,
 
-    #[clap(short, long)]
-    /// give the output in json
+    #[clap(long)]
+    /// give the actions output in json
     json: bool,
+
+    #[clap(short, long)]
+    /// remove all info, error, warn, trace, debug logs
+    silent: bool,
 }
 
 fn main() {
-    colog::basic_builder()
-        .filter(None, LevelFilter::max())
-        .init();
-
     let args = Args::parse();
+
+    if !args.silent {
+        colog::basic_builder()
+            .filter(None, LevelFilter::max())
+            .init();
+    }
+
     let config_dir_path = path::config()
         .map(|e| {
             std::path::absolute(e).unwrap_or_else(|e| {
