@@ -1,4 +1,5 @@
 use super::{Package, PackageManager};
+use anyhow::bail;
 use std::{path::PathBuf, process::Command};
 
 #[derive(Debug)]
@@ -6,12 +7,17 @@ pub struct Pacman;
 
 impl PackageManager for Pacman {
     fn upgrade(&self, packages: &[Package]) -> anyhow::Result<()> {
-        Ok(Command::new("sudo")
+        let status = Command::new("sudo")
             .arg("pacman")
             .arg("-S")
             .args(packages)
-            .status()
-            .map(|_| {})?)
+            .status()?;
+
+        if !status.success() {
+            bail!("pacman failed to upgrade packages with status {status}");
+        }
+
+        Ok(())
     }
 
     fn install(&self, packages: &[Package]) -> anyhow::Result<()> {
@@ -19,11 +25,13 @@ impl PackageManager for Pacman {
     }
 
     fn update(&self) -> anyhow::Result<()> {
-        Ok(Command::new("sudo")
-            .arg("pacman")
-            .arg("-Sy")
-            .status()
-            .map(|_| {})?)
+        let status = Command::new("sudo").arg("pacman").arg("-Sy").status()?;
+
+        if !status.success() {
+            bail!("pacman failed to update package databases with status {status}");
+        }
+
+        Ok(())
     }
 
     fn is_installed(&self, paths: &[PathBuf], package: &Package) -> anyhow::Result<bool> {

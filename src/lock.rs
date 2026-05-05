@@ -21,7 +21,11 @@ pub struct Lock {
 impl Lock {
     /// dumps self to path
     pub fn dump(&self, path: &PathBuf) -> Result<()> {
-        let file = File::options().write(true).create(true).open(path)?;
+        let file = File::options()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(path)?;
         serde_json::to_writer(file, self)?;
         Ok(())
     }

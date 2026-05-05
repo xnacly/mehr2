@@ -1,6 +1,7 @@
 use crate::fs;
 
 use super::{Package, PackageManager};
+use anyhow::bail;
 use std::{path::PathBuf, process::Command};
 
 #[derive(Debug)]
@@ -10,11 +11,15 @@ impl PackageManager for Cargo {
     fn upgrade(&self, packages: &[super::Package]) -> anyhow::Result<()> {
         // cargo does not support upgrading specific packages, so we have to reinstall
         for pkg in packages {
-            Command::new("cargo")
+            let status = Command::new("cargo")
                 .arg("install")
                 .arg(pkg)
                 .arg("--force")
                 .status()?;
+
+            if !status.success() {
+                bail!("cargo failed to install `{pkg}` with status {status}");
+            }
         }
         Ok(())
     }
@@ -24,7 +29,7 @@ impl PackageManager for Cargo {
     }
 
     fn update(&self) -> anyhow::Result<()> {
-        Command::new("cargo").arg("update").status()?;
+        // Installed cargo binaries are updated by reinstalling with `cargo install --force`.
         Ok(())
     }
 
