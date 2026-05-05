@@ -32,11 +32,12 @@ MEHR2 = {
                 "hugo",
                 "go",
                 "ghostty",
-                "rustup"
+                "rustup",
+                "yazi"
             },
         },
         -- list all packages to be installed with the cargo provider
-        { name = "cargo", packages = { "exa", "bat", "ripgrep", "yazi" } },
+        { name = "cargo", packages = { "exa", "bat", "ripgrep" } },
         -- scratch runs these IF the scratch.identifier is not in the lock file
         {
             name = "scratch",
