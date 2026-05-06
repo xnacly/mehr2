@@ -340,7 +340,7 @@ dependencies = [
 
 [[package]]
 name = "mehr2"
-version = "0.0.1-alfa"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "clap",

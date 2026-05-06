@@ -1,7 +1,13 @@
 [package]
 name = "mehr2"
-version = "0.0.1-alfa"
+version = "0.0.1"
+description = "Declarative package provisioning across Linux distributions"
 edition = "2021"
+categories = ["command-line-utilities"]
+keywords = ["package-manager", "prvisioning", "lua"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/xnacly/mehr2"
 
 [dependencies]
 anyhow = "1.0.95"
