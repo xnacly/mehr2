@@ -25,9 +25,9 @@ pub enum Action {
     Update,
     /// Overview over packages managed by mehr
     Info,
-    Version,
     /// Show a list of providers
     Providers,
+    Version,
 }
 
 /// Declarative package provisioning across Linux distributions

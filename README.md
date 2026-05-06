@@ -69,3 +69,43 @@ Drop a configuration file at `$XDG_CONFIG_HOME/mehr2/mehr2.lua` (or
 ## Configuration
 
 View [mehr2.lua](./mehr2.lua) for an annotated configuration file.
+
+## Cli
+
+```text
+Declarative package provisioning across Linux distributions
+
+Usage: mehr2 [OPTIONS] <CMD>
+
+Arguments:
+  <CMD>
+          Possible values:
+          - sync:      Sync system to configuration file
+          - update:    Attempt to update all mehr managed packages
+          - info:      Overview over packages managed by mehr
+          - providers: Show a list of providers
+          - version
+
+Options:
+  -f, --force
+          Ignore the lock file and treat every package in the configuration as pending. With `sync`, this reinstalls every native package and re-runs every scratch script.
+          
+          Use this when the system has drifted from the lock or when you want scratch packages rebuilt against fresh upstreams.
+          
+          Especially useful when combined with --only-provider scratch, this rebuilds all scratch packages.
+
+      --json
+          give the actions output in json
+
+  -s, --silent
+          remove all info, error, warn, trace, debug logs
+
+  -d, --dry
+          stub all actions producing side effects, logged instead
+
+  -p, --only-provider <PROVIDER>
+          Restrict the action to a single provider by name (for instance `pacman`, `cargo`, `scratch`). Other providers are skipped entirely
+
+  -h, --help
+          Print help (see a summary with '-h')
+```
