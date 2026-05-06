@@ -50,21 +50,21 @@ MEHR2 = {
                     -- the script to run in $SHELL in a /tmp directory
                     -- If the exit code is non-zero, the install is considered a failure.
                     script = [[
-                    rustup component add rust-docs
-                    rustup component add cargo
-                    rustup component add clippy
-                    rustup component add rustfmt
+                        rustup component add rust-docs
+                        rustup component add cargo
+                        rustup component add clippy
+                        rustup component add rustfmt
                     ]]
                 },
                 {
                     identifier = "nvim",
                     needs = { "git", "make", "cmake", "gcc" },
                     script = [[
-                    git clone https://github.com/neovim/neovim
-                    cd neovim
-                    git switch nightly
-                    make CMAKE_BUILD_TYPE=Release
-                    make install
+                        git clone https://github.com/neovim/neovim
+                        cd neovim
+                        git switch nightly
+                        make CMAKE_BUILD_TYPE=Release
+                        make install
                     ]]
                 },
             },

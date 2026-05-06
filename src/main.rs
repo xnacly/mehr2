@@ -1,11 +1,8 @@
-#![allow(unused)]
-use std::{env, path::PathBuf, process::exit};
-
 use clap::Parser;
-
 use config::Config;
 use lock::Lock;
 use log::{error, info, trace, LevelFilter};
+use std::{env, path::PathBuf, process::exit};
 
 mod cmd;
 /// config contains the logic for deserializing mehr2.lua
@@ -93,7 +90,7 @@ fn main() {
 
     let lock: Lock = (&args._lock_path)
         .try_into()
-        .inspect_err(|e| {dbg!(e);info!("lock file not found, this seems to be the first run\nthere will be something in the lock file once we install something")})
+        .inspect_err(|e| info!("lock file not found, this seems to be the first run\nthere will be something in the lock file once we install something, but more specifically: `{e}`"))
         .unwrap_or_default();
 
     if let Action::Version = &args.cmd {

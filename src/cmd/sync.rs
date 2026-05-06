@@ -53,6 +53,39 @@ pub fn sync(
         }
     }
 
+    if let Some(provider) = conf.providers.iter().find(|p| p.name == "scratch") {
+        if let config::Packages::ScratchPackages(scratch_pkgs) = &provider.packages {
+            let pending: Vec<&config::ScratchPackage> = match diff.get("scratch") {
+                Some(ids) => scratch_pkgs
+                    .iter()
+                    .filter(|p| ids.iter().any(|id| id == &p.identifier))
+                    .collect(),
+                None => vec![],
+            };
+
+            if !pending.is_empty() {
+                let len = pending.len();
+                info!(
+                    "[scratch] installing {} packages: \n{}",
+                    len,
+                    pending
+                        .iter()
+                        .enumerate()
+                        .map(|(i, p)| format!("{:02}/{len:02}: {}", i + 1, p.identifier))
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                );
+
+                if !args.dry {
+                    let scratch = providers::Scratch;
+                    for pkg in pending {
+                        scratch.install(pkg)?;
+                    }
+                }
+            }
+        }
+    }
+
     if !args.dry {
         // all installs worked, so we are dumping config as lock to disk
         let lock: lock::Lock = conf.into();

@@ -46,6 +46,26 @@ inside the mehr configuration.
 | npm      | planned      |
 | nix      | out of scope |
 
+## Quickstart
+
+Grab the latest static x86 Linux release from the
+[releases page](https://github.com/xnacly/mehr2/releases):
+
+```sh
+curl -LO https://github.com/xnacly/mehr2/releases/latest/download/mehr2-x86_64-linux
+chmod +x ./mehr2-x86_64-linux
+```
+
+Drop a configuration file at `$XDG_CONFIG_HOME/mehr2/mehr2.lua` (or
+`~/.config/mehr2/mehr2.lua`, or anywhere pointed to by `$MEHR_PATH`), see
+[mehr2.lua](./mehr2.lua) for an annotated example.
+
+```sh
+./mehr2-x86_64-linux info     # show what mehr would manage and what's already installed
+./mehr2-x86_64-linux sync     # install everything in the config that isn't yet on the system
+./mehr2-x86_64-linux update   # upgrade packages mehr already manages
+```
+
 ## Configuration
 
 View [mehr2.lua](./mehr2.lua) for an annotated configuration file.

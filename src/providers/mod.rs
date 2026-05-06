@@ -1,18 +1,11 @@
-use crate::{
-    config::{self},
-    lock,
-};
 use anyhow::Result;
 use std::path::PathBuf;
 
 mod cargo;
 mod pacman;
+mod scratch;
 
-pub fn process_packages(config: config::Config, lock: lock::Lock) -> Result<lock::Lock> {
-    let mut result_lock = lock::Lock::default();
-    let diff = lock.diff(&config);
-    todo!();
-}
+pub use scratch::Scratch;
 
 type Package = String;
 
