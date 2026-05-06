@@ -104,13 +104,8 @@ fn build_report(
     report
 }
 
-pub fn info(
-    args: &Args,
-    paths: &[PathBuf],
-    conf: &config::Config,
-    lock: &lock::Lock,
-) -> anyhow::Result<()> {
-    let report = build_report(paths, conf, lock);
+pub fn info(args: &Args, conf: &config::Config, lock: &lock::Lock) -> anyhow::Result<()> {
+    let report = build_report(&args._system_path, conf, lock);
     if args.json {
         println!("{}", serde_json::to_string(&report).unwrap());
     } else {

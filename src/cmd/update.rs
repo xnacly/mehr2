@@ -1,21 +1,22 @@
-use std::path::PathBuf;
-
 use anyhow::anyhow;
 use log::info;
 
 use crate::{config, lock, providers, Args};
 
-pub fn update(
-    args: &Args,
-    paths: &[PathBuf],
-    conf: &config::Config,
-    lock: &lock::Lock,
-) -> anyhow::Result<()> {
+pub fn update(args: &Args, conf: &config::Config, lock: &lock::Lock) -> anyhow::Result<()> {
     let mut updated = 0usize;
 
     for provider in &conf.providers {
         if provider.name == "scratch" {
             info!("[scratch] skipping update; scratch updates are not implemented");
+            continue;
+        }
+
+        if args
+            .only_provider
+            .as_deref()
+            .is_some_and(|only| only != provider.name)
+        {
             continue;
         }
 
@@ -53,8 +54,6 @@ pub fn update(
     if updated == 0 {
         info!("nothing to update, lock file does not contain managed packages");
     }
-
-    let _ = paths;
 
     Ok(())
 }

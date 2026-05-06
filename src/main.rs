@@ -26,6 +26,8 @@ pub enum Action {
     /// Overview over packages managed by mehr
     Info,
     Version,
+    /// Show a list of providers
+    Providers,
 }
 
 /// Declarative package provisioning across Linux distributions
@@ -34,7 +36,13 @@ pub struct Args {
     #[clap(value_enum)]
     cmd: Action,
     #[clap(short, long)]
-    /// disable safe guards for a specific action
+    /// Ignore the lock file and treat every package in the configuration as pending. With `sync`,
+    /// this reinstalls every native package and re-runs every scratch script.
+    ///
+    /// Use this when the system has drifted from the lock or when you want
+    /// scratch packages rebuilt against fresh upstreams.
+    ///
+    /// Especially useful when combined with --only-provider scratch, this rebuilds all scratch packages.
     force: bool,
     #[clap(long)]
     /// give the actions output in json
@@ -43,14 +51,20 @@ pub struct Args {
     /// remove all info, error, warn, trace, debug logs
     silent: bool,
     #[clap(short, long)]
-    /// stop right before invoking providers
+    /// stub all actions producing side effects, logged instead
     dry: bool,
+    #[clap(short = 'p', long, value_name = "PROVIDER")]
+    /// Restrict the action to a single provider by name (for instance `pacman`,
+    /// `cargo`, `scratch`). Other providers are skipped entirely.
+    only_provider: Option<String>,
 
     /// injected to propagate file paths
     #[clap(skip)]
     _configuration_path: PathBuf,
     #[clap(skip)]
     _lock_path: PathBuf,
+    #[clap(skip)]
+    _system_path: Vec<PathBuf>,
 }
 
 fn main() {
@@ -60,6 +74,16 @@ fn main() {
         colog::basic_builder()
             .filter(None, LevelFilter::max())
             .init();
+    }
+
+    if let Some(name) = args.only_provider.as_deref() {
+        if !providers::is_valid_name(name) {
+            error!(
+                "unknown provider `{name}` for --only-provider; valid: {}",
+                providers::names().collect::<Vec<_>>().join(", ")
+            );
+            exit(1);
+        }
     }
 
     let config_dir_path = path::config()
@@ -138,7 +162,8 @@ fn main() {
 
     let path_env = env::var_os("PATH").unwrap();
     let paths = env::split_paths(&path_env).collect::<Vec<_>>();
-    if let Err(e) = cmd::for_action(args.cmd)(&args, &paths, &config, &lock) {
+    args._system_path = paths;
+    if let Err(e) = cmd::for_action(args.cmd)(&args, &config, &lock) {
         error!("failed to execute action: {e}");
         exit(1);
     }
