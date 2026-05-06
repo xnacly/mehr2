@@ -1,12 +1,22 @@
 use super::{Package, PackageManager};
+use crate::Args;
 use anyhow::bail;
+use log::info;
 use std::{path::PathBuf, process::Command};
 
 #[derive(Debug)]
 pub struct Pacman;
 
 impl PackageManager for Pacman {
-    fn upgrade(&self, packages: &[Package]) -> anyhow::Result<()> {
+    fn upgrade(&self, args: &Args, packages: &[Package]) -> anyhow::Result<()> {
+        if args.dry {
+            info!(
+                "[pacman] dry: would run sudo pacman -S {}",
+                packages.join(" ")
+            );
+            return Ok(());
+        }
+
         let status = Command::new("sudo")
             .arg("pacman")
             .arg("-S")
@@ -20,11 +30,16 @@ impl PackageManager for Pacman {
         Ok(())
     }
 
-    fn install(&self, packages: &[Package]) -> anyhow::Result<()> {
-        Pacman.upgrade(packages)
+    fn install(&self, args: &Args, packages: &[Package]) -> anyhow::Result<()> {
+        self.upgrade(args, packages)
     }
 
-    fn update(&self) -> anyhow::Result<()> {
+    fn update(&self, args: &Args) -> anyhow::Result<()> {
+        if args.dry {
+            info!("[pacman] dry: would run sudo pacman -Sy");
+            return Ok(());
+        }
+
         let status = Command::new("sudo").arg("pacman").arg("-Sy").status()?;
 
         if !status.success() {

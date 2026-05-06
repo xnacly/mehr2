@@ -46,10 +46,8 @@ pub fn update(
 
         updated += len;
 
-        if !args.dry {
-            resolved_provider.update()?;
-            resolved_provider.upgrade(packages)?;
-        }
+        resolved_provider.update(args)?;
+        resolved_provider.upgrade(args, packages)?;
     }
 
     if updated == 0 {

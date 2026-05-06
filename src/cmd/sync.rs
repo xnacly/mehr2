@@ -48,9 +48,7 @@ pub fn sync(
                 .join("\n")
         );
 
-        if !args.dry {
-            resolved_provider.install(&pkgs)?;
-        }
+        resolved_provider.install(args, &pkgs)?;
     }
 
     if let Some(provider) = conf.providers.iter().find(|p| p.name == "scratch") {
@@ -76,11 +74,9 @@ pub fn sync(
                         .join("\n")
                 );
 
-                if !args.dry {
-                    let scratch = providers::Scratch;
-                    for pkg in pending {
-                        scratch.install(pkg)?;
-                    }
+                let scratch = providers::Scratch;
+                for pkg in pending {
+                    scratch.install(args, pkg)?;
                 }
             }
         }

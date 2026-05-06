@@ -1,16 +1,23 @@
 use crate::fs;
+use crate::Args;
 
 use super::{Package, PackageManager};
 use anyhow::bail;
+use log::info;
 use std::{path::PathBuf, process::Command};
 
 #[derive(Debug)]
 pub struct Cargo;
 
 impl PackageManager for Cargo {
-    fn upgrade(&self, packages: &[super::Package]) -> anyhow::Result<()> {
+    fn upgrade(&self, args: &Args, packages: &[super::Package]) -> anyhow::Result<()> {
         // cargo does not support upgrading specific packages, so we have to reinstall
         for pkg in packages {
+            if args.dry {
+                info!("[cargo] dry: would run cargo install {pkg} --force");
+                continue;
+            }
+
             let status = Command::new("cargo")
                 .arg("install")
                 .arg(pkg)
@@ -24,11 +31,11 @@ impl PackageManager for Cargo {
         Ok(())
     }
 
-    fn install(&self, packages: &[Package]) -> anyhow::Result<()> {
-        self.upgrade(packages)
+    fn install(&self, args: &Args, packages: &[Package]) -> anyhow::Result<()> {
+        self.upgrade(args, packages)
     }
 
-    fn update(&self) -> anyhow::Result<()> {
+    fn update(&self, _args: &Args) -> anyhow::Result<()> {
         // Installed cargo binaries are updated by reinstalling with `cargo install --force`.
         Ok(())
     }

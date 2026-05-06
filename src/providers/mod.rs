@@ -1,3 +1,4 @@
+use crate::Args;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -10,9 +11,9 @@ pub use scratch::Scratch;
 type Package = String;
 
 pub trait PackageManager: std::fmt::Debug {
-    fn upgrade(&self, packages: &[Package]) -> Result<()>;
-    fn install(&self, packages: &[Package]) -> Result<()>;
-    fn update(&self) -> Result<()>;
+    fn upgrade(&self, args: &Args, packages: &[Package]) -> Result<()>;
+    fn install(&self, args: &Args, packages: &[Package]) -> Result<()>;
+    fn update(&self, args: &Args) -> Result<()>;
     fn is_installed(&self, paths: &[PathBuf], package: &Package) -> Result<bool>;
 }
 
